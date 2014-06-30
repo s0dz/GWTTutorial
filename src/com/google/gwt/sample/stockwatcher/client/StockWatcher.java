@@ -1,6 +1,7 @@
 package com.google.gwt.sample.stockwatcher.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -8,6 +9,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -150,7 +153,44 @@ public class StockWatcher implements EntryPoint {
 		updateTable( prices );
 	}
 	
+	/**
+	 * Update the Price and Change fields.
+	 * 
+	 * @param prices
+	 */
+	@SuppressWarnings("deprecation")
 	private void updateTable( StockPrice[] prices ) {
-		// TODO Auto-generated method sub
+		
+		for( int i = 0; i < prices.length; i++ ) {
+			updateTable( prices[i] );
+		}
+		
+		// Display timestamp showing last refresh.
+		lastUpdatedLabel.setText( "Last update : " + DateTimeFormat.getMediumDateTimeFormat().format( new Date() ) );
 	}
+
+	/**
+	 * Update a single row in the stock table.
+	 * 
+	 * @param price
+	 */
+	private void updateTable( StockPrice price ) {
+		
+		// Make sure it exists.
+		if( !stocks.contains( price.getSymbol() ) ) {
+			return;
+		}
+		
+		int row = stocks.indexOf( price.getSymbol() ) + 1;
+		
+		// Format the data in the Price and Change fields.
+		String priceText = NumberFormat.getFormat( "#,##0.00" ).format( price.getPrice() );
+		NumberFormat changeFormat = NumberFormat.getFormat( "+#,##0.00;-#,##0.00" );
+		String changeText = changeFormat.format( price.getChange() );
+		String changePercentText = changeFormat.format( price.getChangePercent() );
+		
+		// Populate the Price and Change fields with new data.
+		stocksFlexTable.setText( row, 1, priceText );
+		stocksFlexTable.setText( row, 2, changeText + " (" + changePercentText + "%)" );
+	}	
 }
