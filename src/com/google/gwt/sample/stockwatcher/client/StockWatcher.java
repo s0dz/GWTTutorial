@@ -191,7 +191,7 @@ public class StockWatcher implements EntryPoint {
 		RequestBuilder builder = new RequestBuilder( RequestBuilder.GET, url );
 		
 		try {
-			Request request = builder.sendRequest( null, new RequestCallback() {
+			builder.sendRequest( null, new RequestCallback() {
 				
 				@Override
 				public void onResponseReceived(Request request, Response response) {
